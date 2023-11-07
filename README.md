@@ -1,2 +1,2 @@
 # PHY571
-Numerical physics project on Bird flocking and swarm intelligence modelisation
+Numerical physics project on Bird flocking and Swarm intelligence modelisation
