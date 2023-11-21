@@ -18,15 +18,27 @@ class Bird:
 
 
 
-    def get_neighbors(self, swarm, R):
-        "get the neighbors of a bird"
+    def get_neighbors(self, swarm, R, L):
+        "get the neighbors of a bird with periodic boundary conditions"
 
-        neighbors = []
+        neighbors = [self]
         for bird in swarm:
             if bird != self:
-                if np.sqrt((self.X - bird.X)**2 + (self.Y - bird.Y)**2) <= R:
+                # Calculate the distance between birds with periodic boundary conditions
+                dx = abs(self.X - bird.X)
+                dy = abs(self.Y - bird.Y)
+
+                # Apply periodic boundary conditions
+                dx = min(dx, L - dx)
+                dy = min(dy, L - dy)
+
+                distance = np.sqrt(dx**2 + dy**2)
+
+                if distance <= R:
                     neighbors.append(bird)
+
         return neighbors
+
     
     def get_mean_theta(self, neighbors):
         "get the average theta of the neighbors, according to the formula in the paper"
@@ -62,8 +74,8 @@ class Swarm :
         for i in range(self.number):
             X = rnd.uniform(0, self.length)
             Y = rnd.uniform(0, self.length)
-            #theta = rnd.uniform(- np.pi, np.pi)
-            theta = - np.pi
+            theta = rnd.uniform(- np.pi, np.pi)
+            #theta = - np.pi/2
 
             self.birds.append(Bird(X, Y, theta, self.velocity_norm))
 
@@ -95,7 +107,7 @@ class Swarm :
                 new_Y += self.length
 
             random_theta = np.random.uniform(-self.eta/2, self.eta/2)
-            new_theta = random_theta + bird.get_mean_theta(bird.get_neighbors(self.birds, self.interaction_radius))
+            new_theta = random_theta + bird.get_mean_theta(bird.get_neighbors(self.birds, self.interaction_radius,self.length))
 
             bird.X = new_X
             bird.Y = new_Y
