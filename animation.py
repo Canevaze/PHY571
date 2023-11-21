@@ -42,10 +42,13 @@ class Bird:
     
     def get_mean_theta(self, neighbors):
         "get the average theta of the neighbors, according to the formula in the paper"
-
         thetas = [bird.theta for bird in neighbors]
+
         mean = np.mean(np.sin(thetas))/np.mean(np.cos(thetas))
-        return np.arctan(mean)
+        if np.mean(np.cos(thetas))<0 :
+            return np.arctan(mean) + np.pi
+        else :
+            return np.arctan(mean)
 
     # def evolve(self, dt):
     #     "get the new position of the bird"
@@ -74,8 +77,8 @@ class Swarm :
         for i in range(self.number):
             X = rnd.uniform(0, self.length)
             Y = rnd.uniform(0, self.length)
-            theta = rnd.uniform(- np.pi, np.pi)
-            #theta = - np.pi/2
+            theta = rnd.uniform(0, 2*np.pi)
+            #theta = -np.pi
 
             self.birds.append(Bird(X, Y, theta, self.velocity_norm))
 
@@ -90,6 +93,7 @@ class Swarm :
     def evolve(self):
         "evolve the swarm"
         
+        updated_birds = []
 
         for bird in self.birds:
             new_X = bird.X + bird.velocity * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
@@ -108,17 +112,19 @@ class Swarm :
 
             random_theta = np.random.uniform(-self.eta/2, self.eta/2)
             new_theta = random_theta + bird.get_mean_theta(bird.get_neighbors(self.birds, self.interaction_radius,self.length))
+            updated_birds.append([new_X, new_Y, new_theta])
 
-            bird.X = new_X
-            bird.Y = new_Y
-            bird.theta = new_theta
+        for i, bird in enumerate(self.birds):
+            bird.X = updated_birds[i][0]
+            bird.Y = updated_birds[i][1]
+            bird.theta = updated_birds[i][2]
         
             
 #create swarm of birds and do an animation of the evolution
-L = 25
+L = 5
 N = 300
 V = 0.03
-eta = 0
+eta = 0.1
 interaction_radius = 1
 swarm = Swarm(L, N, V, eta, interaction_radius)
 swarm.initialize()
