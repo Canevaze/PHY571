@@ -62,7 +62,9 @@ class Swarm :
         for i in range(self.number):
             X = rnd.uniform(0, self.length)
             Y = rnd.uniform(0, self.length)
-            theta = rnd.uniform(0, 2*np.pi)
+            #theta = rnd.uniform(- np.pi, np.pi)
+            theta = - np.pi
+
             self.birds.append(Bird(X, Y, theta, self.velocity_norm))
 
     def get_swarm_mean_velocity(self):
@@ -76,7 +78,6 @@ class Swarm :
     def evolve(self):
         "evolve the swarm"
         
-        update = []
 
         for bird in self.birds:
             new_X = bird.X + bird.velocity * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
@@ -94,21 +95,18 @@ class Swarm :
                 new_Y += self.length
 
             random_theta = np.random.uniform(-self.eta/2, self.eta/2)
-            new_theta = random_theta + bird.get_mean_theta(bird.get_neighbors(self.birds, interaction_radius))
+            new_theta = random_theta + bird.get_mean_theta(bird.get_neighbors(self.birds, self.interaction_radius))
 
-            update.append([new_X, new_Y, new_theta])
+            bird.X = new_X
+            bird.Y = new_Y
+            bird.theta = new_theta
         
-        #enumerate self.birds to apply the update
-        for i, bird in enumerate(self.birds):
-            bird.X = update[i][0]
-            bird.Y = update[i][1]
-            bird.theta = update[i][2]
             
 #create swarm of birds and do an animation of the evolution
 L = 25
 N = 300
 V = 0.03
-eta = 0.1
+eta = 0
 interaction_radius = 1
 swarm = Swarm(L, N, V, eta, interaction_radius)
 swarm.initialize()
@@ -139,7 +137,7 @@ def update(q):
 
 
 # Create the animation
-animation = FuncAnimation(fig, update, frames=range(100), interval=100)
+animation = FuncAnimation(fig, update, frames=range(100), interval=1)
 
 # Show the animation
 plt.show()
