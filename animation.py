@@ -114,19 +114,9 @@ swarm = Swarm(L, N, V, eta, interaction_radius)
 swarm.initialize()
 
 
-it = 30
 # Create the figure and axis for the plot
 fig, ax = plt.subplots()
 
-# Plot the initial positions of the birds as points
-
-
-# Add arrows to represent the direction of each bird
-# arrows = []
-# for bird in swarm.birds:
-#     arrow = ax.arrow(bird.X, bird.Y, 0.2 * np.cos(bird.theta), 0.2 * np.sin(bird.theta),
-#                      head_width=0.05, head_length=0.1, fc='red', ec='red')
-#     arrows.append(arrow)
 
 
 
@@ -134,48 +124,18 @@ fig, ax = plt.subplots()
 ax.set_xlim(0, L)
 ax.set_ylim(0, L)
 
-# velocities = []
 
-# for i in range(it):
-
-    
-
-#     if i >=it-20:
-#         #store the velocity of each bird in velocities
-#         velocities.append([bird.theta for bird in swarm.birds])
-    
-    
-
-
-
-#     swarm.evolve()
-
-# arrows = []
-# for k,bird in enumerate(swarm.birds):
-#     arrow = ax.arrow(bird.X, bird.Y, 0.035*L*np.cos(np.mean([vel[k] for vel in velocities])),0.035*L*np.sin(np.mean([vel[k] for vel in velocities])),
-#                     head_width=0.05, head_length=0.1, fc='red', ec='red')
-#     arrows.append(arrow)
-
-# points, = ax.plot([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds], 'bo')
-# Create the animation
-
-# ... (your existing code)
 
 # Initialize the plot objects
 points, = ax.plot([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds], 'bo')
-# arrows = [ax.arrow(bird.X, bird.Y, 0.035*L*np.cos(bird.theta), 0.035*L*np.sin(bird.theta),
-#                    head_width=0.008*L, head_length=0.008*L, fc='red', ec='red') for bird in swarm.birds]
 
 # Update function
-def update(frame):
+def update(q):
     swarm.evolve()
     points.set_data([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds])
 
-    # for k, bird in enumerate(swarm.birds):
-    #     arrows[k].set_xy((bird.X, bird.Y))
-    #     arrows[k].set_UVC(0.2 * np.cos(bird.theta), 0.2 * np.sin(bird.theta))
 
-    return points#, arrows
+    return points
 
 
 # Create the animation
