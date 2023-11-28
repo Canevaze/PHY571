@@ -36,6 +36,11 @@ class Bird:
                 dx = min(dx, L - dx)
                 dy = min(dy, L - dy)
 
+
+                # #other way of calculating the distance
+                # dx = (bird.X - self.X + L / 2) % L - L / 2
+                # dy = (bird.Y - self.Y + L / 2) % L - L / 2
+
                 distance = np.sqrt(dx**2 + dy**2)
 
                 if distance <= R1:
@@ -51,7 +56,7 @@ class Bird:
     def get_theta_medium(self, neighbors):
         "get the average theta of the neighbors, according to the formula in the paper"
 
-        if not neighbors:
+        if not neighbors:   # so it is verified when calculating the new theta
             return np.nan
         
 
@@ -66,15 +71,19 @@ class Bird:
         
 
         
-    def get_theta_long(self,neighbors):
+    def get_theta_long(self,neighbors,length):
         "get the mean angle of all the angle that point to neighbors"
 
-        if not neighbors:
+        if not neighbors:   # so it is verified when calculating the new theta
             return np.nan
 
         # Calculate the differences in coordinates for each neighbor
-        delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
-        delta_y = np.array([neighbor.Y - self.Y for neighbor in neighbors])
+
+        delta_x = np.array([(neighbor.X - self.X + length/2) % length - length/2 for neighbor in neighbors])
+        delta_y = np.array([(neighbor.Y - self.Y + length/2) % length - length/2 for neighbor in neighbors])
+
+        #delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
+        #delta_y = np.array([neighbor.Y - self.Y for neighbor in neighbors])
 
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
@@ -83,16 +92,21 @@ class Bird:
     
 
     
-    def get_theta_short(self,neighbors):
+    def get_theta_short(self,neighbors, length):
         "get the mean angle of all the angle that point to the opposite of the neighbors"
 
-        if not neighbors:
+        if not neighbors:   # so it is verified when calculating the new theta
             return np.nan
         
 
         # Calculate the differences in coordinates for each neighbor
-        delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
-        delta_y = np.array([neighbor.Y - self.Y for neighbor in neighbors])
+
+        delta_x = np.array([(neighbor.X - self.X + length/2) % length - length/2 for neighbor in neighbors])
+        delta_y = np.array([(neighbor.Y - self.Y + length/2) % length - length/2 for neighbor in neighbors])
+
+
+        #delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
+        #delta_y = np.array([neighbor.Y - self.Y for neighbor in neighbors])
 
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
@@ -175,8 +189,8 @@ class Swarm :
 
 
 
-            new_theta_long = bird.get_theta_long(neigh[2]) if neigh[2] else bird.theta
-            new_theta_short = bird.get_theta_short(neigh[0]) if neigh[0] else bird.theta
+            new_theta_long = bird.get_theta_long(neigh[2],self.length) if neigh[2] else bird.theta
+            new_theta_short = bird.get_theta_short(neigh[0],self.length) if neigh[0] else bird.theta
             new_theta_medium = bird.get_theta_medium(neigh[1]) if neigh[1] else bird.theta
 
 
