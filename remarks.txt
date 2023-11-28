@@ -1,0 +1,8 @@
+Problems with the mean velocity of the swarm:
+- we have to get the mean direction of each bird, bc otherwise when eta becomes large then 
+  we average over directions which are very different from the mean direcrtions of each bird
+- difference between time average and ensemble average
+
+Problems with the arctan formula used in the text
+
+Problems with the neighbours which can be on other sides of the box (periodic boundaries)
