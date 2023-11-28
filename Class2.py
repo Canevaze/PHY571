@@ -47,7 +47,7 @@ class Bird:
         return neighbors_short, neighbors_medium, neighbors_long
 
     
-    def get_mean_theta(self, neighbors):
+    def get_theta_medium(self, neighbors):
         "get the average theta of the neighbors, according to the formula in the paper"
         thetas = [bird.theta for bird in neighbors]
 
@@ -56,6 +56,28 @@ class Bird:
             return np.arctan(mean) + np.pi
         else :
             return np.arctan(mean)
+        
+    def get_theta_long(self,neighbors):
+        "get the mean angle of all the angle that point to neighbors"
+        # Calculate the differences in coordinates for each neighbor
+        delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
+        delta_y = np.array([neighbor.Y - self.Y for neighbor in neighbors])
+
+        # Calculate the angles using arctan2
+        angles = np.arctan2(delta_y, delta_x)
+
+        return np.mean(angles)
+    
+    def get_theta_short(self,neighbors):
+        "get the mean angle of all the angle that point to the opposite of the neighbors"
+        # Calculate the differences in coordinates for each neighbor
+        delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
+        delta_y = np.array([neighbor.Y - self.Y for neighbor in neighbors])
+
+        # Calculate the angles using arctan2
+        angles = np.arctan2(delta_y, delta_x)
+
+        return np.mean(angles) + np.pi
 
     # def evolve(self, dt):
     #     "get the new position of the bird"
@@ -67,12 +89,14 @@ class Bird:
 class Swarm :
     "Creats the swarm state with many birds"
 
-    def __init__(self, L, N, V, eta, radius):
+    def __init__(self, L, N, V, eta, radius1, radius2, radius3):
         self.length = L
         self.number = N
         self.velocity_norm = V
         self.eta = eta
-        self.interaction_radius = radius
+        self.interaction_radius_1 = radius1
+        self.interaction_radius_2 = radius2
+        self.interaction_radius_3 = radius3
 
         self.dt = 1
         self.rho = N/(L**2)
@@ -82,8 +106,8 @@ class Swarm :
         "initialize the swarm with random positions and velocities"
 
         for i in range(self.number):
-            X = rnd.uniform(0, self.length)
-            Y = rnd.uniform(0, self.length)
+            X = rnd.uniform(0, self.length/2)
+            Y = rnd.uniform(0, self.length/2)
             theta = rnd.uniform(0, 2*np.pi)
 
             self.birds.append(Bird(X, Y, theta, self.velocity_norm))
@@ -117,7 +141,19 @@ class Swarm :
                 new_Y += self.length
 
             random_theta = np.random.uniform(-self.eta/2, self.eta/2)
-            new_theta = random_theta + bird.get_mean_theta(bird.get_neighbors(self.birds, self.interaction_radius,self.length))
+
+            neigh = bird.get_neighbors(self.birds, self.interaction_radius_1,
+                                                                        self.interaction_radius_2, self.interaction_radius_3
+                                                                        ,self.length)
+
+            new_theta_long = bird.get_theta_long(neigh[2]) if neigh[2] else bird.theta
+            new_theta_short = bird.get_theta_short(neigh[0]) if neigh[0] else bird.theta
+            new_theta_medium = bird.get_theta_medium(neigh[1]) if neigh[1] else bird.theta
+
+
+            
+            new_theta = np.mean([new_theta_medium, new_theta_long, new_theta_short]) + random_theta
+
             updated_birds.append([new_X, new_Y, new_theta])
 
         for i, bird in enumerate(self.birds):
