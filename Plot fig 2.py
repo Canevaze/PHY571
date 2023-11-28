@@ -26,12 +26,19 @@ def plot(it=200,N=40,V=0.03, L=3.1, R=1):
     v = []
     for e in tqdm(eta):
         average = []
-        for k in range(10):
+        for i in range(10):
             average.append(retrieve_param_eta(e,it,N,V, L, R))
         v.append(np.mean(average))
+
+
+
+    #plot it all
+
     plt.scatter(eta,v)
     plt.xlabel("eta")
     plt.ylabel("v")
+    #display the parameter values
+    plt.title("N = " + str(N) + ", V = " + str(V) + ", L = " + str(L) + ", R = " + str(R))
     plt.show()
 
     

@@ -85,8 +85,8 @@ class Swarm :
     def get_swarm_mean_velocity(self):
         "get the mean vectorial velocity of the swarm, which is the order parameter"
 
-        mean_vx = np.mean([bird.velocity * np.cos(np.mean(bird.all_thetas[-5,-1])) for bird in self.birds])
-        mean_vy = np.mean([bird.velocity * np.sin(np.mean(bird.all_thetas[-5,-1])) for bird in self.birds])
+        mean_vx = np.mean([bird.velocity * np.cos(np.mean(bird.all_thetas[-1])) for bird in self.birds])
+        mean_vy = np.mean([bird.velocity * np.sin(np.mean(bird.all_thetas[-1])) for bird in self.birds])
 
         return np.sqrt(mean_vx**2 + mean_vy**2)/self.velocity_norm
 
