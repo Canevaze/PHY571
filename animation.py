@@ -5,16 +5,18 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 
-from Class import *
+from Class2 import *
         
             
 #create swarm of birds and do an animation of the evolution
-L = 10
-N = 300
+L = 5
+N = 100
 V = 0.03
-eta = 0.1
-interaction_radius = 1
-swarm = Swarm(L, N, V, eta, interaction_radius)
+eta = 0.
+interaction_radius_1 = 1
+interaction_radius_2 = 2
+interaction_radius_3 = 3
+swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
 swarm.initialize()
 
 
