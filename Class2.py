@@ -79,7 +79,7 @@ class Bird:
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
 
-        return np.mean(angles)
+        return sc.circmean(angles)
     
 
     
@@ -97,7 +97,7 @@ class Bird:
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
 
-        return np.mean(angles) + np.pi
+        return sc.circmean(angles) + np.pi
     
 
 
@@ -130,8 +130,8 @@ class Swarm :
         for i in range(self.number):
             X = rnd.uniform(0, self.length)
             Y = rnd.uniform(0, self.length)
-            #theta = rnd.uniform(0, 2*np.pi)
-            theta = np.pi/2
+            theta = rnd.uniform(0, 2*np.pi)
+            
 
             self.birds.append(Bird(X, Y, theta, self.velocity_norm))
 
