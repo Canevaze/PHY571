@@ -11,35 +11,44 @@ from Class import *
             
 #create swarm of birds and do an animation of the evolution
 
+v = np.load('name_file_v.npy')
+eta = np.load('name_file_eta.npy')
 
-def retrieve_param_eta(eta,it,N,V, L, R):
-    swarm = Swarm(L, N, V, eta, R)
-    swarm.initialize()
+import numpy as np
+import matplotlib.pyplot as plt
 
-    for i in range(it):
-        swarm.evolve()
+def plot_v_vs_eta_subplot(v, eta, eta_critical_values):
+    num_plots = len(eta_critical_values)
     
-    return swarm.get_swarm_mean_velocity()
+    # Create subplots
+    fig, axes = plt.subplots(num_plots, 1, figsize=(8, 4 * num_plots), sharex=True)
 
-def plot(it=200,N=40,V=0.03, L=3.1, R=1):
-    eta = np.linspace(0.0,5,50)
-    v = []
-    for e in tqdm(eta):
-        average = []
-        for i in range(10):
-            average.append(retrieve_param_eta(e,it,N,V, L, R))
-        v.append(np.mean(average))
+    for i, eta_critical in enumerate(eta_critical_values):
+        # Calculate the x-values: (eta_critical - eta) / eta_critical
+        x_values = (eta_critical - eta) / eta_critical
 
+        # Plot v in function of (eta_critical - eta) / eta_critical in each subplot
+        axes[i].plot(x_values, v, label=f'eta_critical = {eta_critical}')
+        
+        # Add labels and title to the first subplot
+        if i == 0:
+            axes[i].set_xlabel(f'({eta_critical} - eta) / {eta_critical}')
+            axes[i].set_ylabel('v')
+            axes[i].set_title('v vs. (eta_critical - eta) / eta_critical')
 
+        # Add a legend to each subplot
+        axes[i].legend()
 
-    #plot it all
+    # Adjust layout
+    plt.tight_layout()
 
-    plt.scatter(eta,v)
-    plt.xlabel("eta")
-    plt.ylabel("v")
-    #display the parameter values
-    plt.title("N = " + str(N) + ", V = " + str(V) + ", L = " + str(L) + ", R = " + str(R))
+    # Show the plot
     plt.show()
 
-    
-plot()
+# Example usage:
+# Generate some example data
+eta_critical_values = [2, 3, 4, 5]
+
+# Call the function to plot the data with different eta_critical values
+plot_v_vs_eta_subplot(v, eta, eta_critical_values)
+
