@@ -180,6 +180,27 @@ class Predator:
         # Save the new position
         self.all_positions.append((self.X, self.Y))
 
+    def get_predator_neighbors(self, swarm, R, L):
+        "get the neighbors of a bird with periodic boundary conditions"
+
+        neighbors = [self]
+        for bird in swarm:
+            if bird != self:
+                # Calculate the distance between birds with periodic boundary conditions
+                dx = abs(self.X - bird.X)
+                dy = abs(self.Y - bird.Y)
+
+                # Apply periodic boundary conditions
+                dx = min(dx, L - dx)
+                dy = min(dy, L - dy)
+
+                distance = np.sqrt(dx**2 + dy**2)
+
+                if distance <= R:
+                    neighbors.append(bird)
+
+        return neighbors
+
 
 
     
@@ -225,8 +246,10 @@ class Swarm :
         self.predator = predator
 
     def get_prey_positions(self):
-        return [(bird.X, bird.Y) for bird in self.birds]
-    
+        if self.predator:
+            return [(bird.X, bird.Y) for bird in self.predator.get_predator_neighbors(self.birds, self.interaction_radius_3, self.length)]
+        else:
+            return []
 
 
     # ------------------ Evolution methods ------------------ #
