@@ -50,7 +50,7 @@ class Bird:
                 elif distance <= R3:
                     neighbors_long.append(bird)
 
-        return neighbors_short, neighbors_medium, neighbors_long
+        return neighbors_short, neighbors_medium, neighbors_long, distance
 
     
     def get_theta_medium(self, neighbors):
@@ -93,7 +93,7 @@ class Bird:
 
     
     def get_theta_short(self,neighbors, length):
-        "get the mean angle of all the angle that point to the opposite of the neighbors"
+        "get the mean angle of all the angle that point to the opposite of the neighbors, also pondarate considering the proximity"
 
         if not neighbors:   # so it is verified when calculating the new theta
             return np.nan
@@ -110,8 +110,11 @@ class Bird:
 
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
+        #do the circmean but by weighting by the distance
+        return sc.circmean(angles, weights = 1/np.sqrt(delta_x**2 + delta_y**2))
+        
 
-        return sc.circmean(angles) + np.pi
+        #return sc.circmean(angles) + np.pi
     
 
 
