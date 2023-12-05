@@ -160,14 +160,14 @@ class Predator:
         self.velocity = velocity
         self.all_positions = [(X, Y)]
 
-    def update_position(self, prey_positions, dt):
+    def update_position(self, prey_positions, dt, length):
         # Add predator movement logic here
         # For example, you can make the predator move towards the average position of the prey
         if prey_positions:
             mean_prey_x = np.mean([pos[0] for pos in prey_positions])
             mean_prey_y = np.mean([pos[1] for pos in prey_positions])
-            direction_x = mean_prey_x - self.X
-            direction_y = mean_prey_y - self.Y
+            direction_x = (mean_prey_x - self.X + length/2) % length - length/2
+            direction_y = (mean_prey_y - self.Y + length/2) % length - length/2
             distance = np.sqrt(direction_x**2 + direction_y**2)
             
             if distance > 0:
@@ -177,29 +177,35 @@ class Predator:
                 self.X += direction_x * self.velocity * dt
                 self.Y += direction_y * self.velocity * dt
 
+                # Apply periodic boundary conditions  (other way of doing it, compared to what we did with the birds)
+                self.X = (self.X + length) % length
+                self.Y = (self.Y + length) % length
+
         # Save the new position
         self.all_positions.append((self.X, self.Y))
 
-    def get_predator_neighbors(self, swarm, R, L):
+    def get_predator_neighbors(self, swarm, R, length):
         "get the neighbors of a bird with periodic boundary conditions"
 
         neighbors = [self]
         for bird in swarm:
             if bird != self:
                 # Calculate the distance between birds with periodic boundary conditions
-                dx = abs(self.X - bird.X)
-                dy = abs(self.Y - bird.Y)
+                dx = self.X - bird.X
+                dy = self.Y - bird.Y
 
                 # Apply periodic boundary conditions
-                dx = min(dx, L - dx)
-                dy = min(dy, L - dy)
+                dx = (dx + length / 2) % length - length / 2
+                dy = (dy + length / 2) % length - length / 2
 
                 distance = np.sqrt(dx**2 + dy**2)
 
-                if distance <= R:
+                if 0 < distance <= R:
                     neighbors.append(bird)
 
         return neighbors
+    
+
 
 
 
@@ -245,11 +251,15 @@ class Swarm :
     def add_predator(self, predator):
         self.predator = predator
 
+
     def get_prey_positions(self):
         if self.predator:
-            return [(bird.X, bird.Y) for bird in self.predator.get_predator_neighbors(self.birds, self.interaction_radius_3, self.length)]
-        else:
-            return []
+            neighbors = self.predator.get_predator_neighbors(self.birds, self.interaction_radius_3, self.length)
+            if len(neighbors) > 1:  # Check if there are more than just the predator in the list
+                return [(bird.X, bird.Y) for bird in neighbors]
+        # If no prey or neighbors, return positions of all birds
+        return [(bird.X, bird.Y) for bird in self.birds]
+
 
 
     # ------------------ Evolution methods ------------------ #
@@ -262,7 +272,7 @@ class Swarm :
         prey_positions = self.get_prey_positions()
 
         # Update predator position
-        self.predator.update_position(prey_positions, self.dt)
+        self.predator.update_position(prey_positions, self.dt, self.length)
         
         updated_birds = []
 
@@ -271,20 +281,6 @@ class Swarm :
             #assure the angle is between 0 and 2pi
             bird.theta = (bird.theta + 2*np.pi) % (2*np.pi)
 
-            new_X = bird.X + bird.velocity * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
-            new_Y = bird.Y + bird.velocity * np.sin(bird.theta) * self.dt
-
-            #if the bird is out of the box, it comes back from the other side
-            if new_X > self.length:
-                new_X -= self.length
-            elif new_X < 0:
-                new_X += self.length
-
-            if new_Y > self.length:
-                new_Y -= self.length
-            elif new_Y < 0:
-                new_Y += self.length
-
             random_theta = np.random.uniform(-self.eta/2, self.eta/2)
 
 
@@ -292,6 +288,9 @@ class Swarm :
             if np.sqrt((bird.X - self.predator.X)**2 + (bird.Y - self.predator.Y)**2) < self.interaction_radius_3:
                 new_theta = bird.theta_predator(self.predator, self.length) + random_theta
                 new_theta = (new_theta + 2*np.pi) % (2*np.pi)
+
+                new_X = bird.X + (bird.velocity*1.5) * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
+                new_Y = bird.Y + (bird.velocity*1.5) * np.sin(bird.theta) * self.dt
 
             else:
 
@@ -313,6 +312,21 @@ class Swarm :
 
 
                 new_theta = (new_theta + 2*np.pi) % (2*np.pi)
+                new_X = bird.X + bird.velocity * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
+                new_Y = bird.Y + bird.velocity * np.sin(bird.theta) * self.dt
+
+
+
+            #if the bird is out of the box, it comes back from the other side
+            if new_X > self.length:
+                new_X -= self.length
+            elif new_X < 0:
+                new_X += self.length
+
+            if new_Y > self.length:
+                new_Y -= self.length
+            elif new_Y < 0:
+                new_Y += self.length
 
 
             updated_birds.append([new_X, new_Y, new_theta])
