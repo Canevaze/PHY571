@@ -154,10 +154,11 @@ class Bird:
 class Predator:
     """A class for the predator bird"""
 
-    def __init__(self, X, Y, velocity):
+    def __init__(self, X, Y, velocity, detection_radius):
         self.X = X
         self.Y = Y
         self.velocity = velocity
+        self.detection_radius = detection_radius
         self.all_positions = [(X, Y)]
 
     def update_position(self, prey_positions, dt, length):
@@ -264,7 +265,7 @@ class Swarm :
 
     def get_prey_positions(self):
         if self.predator:
-            neighbors = self.predator.get_predator_neighbors(self.birds, self.interaction_radius_3, self.length)
+            neighbors = self.predator.get_predator_neighbors(self.birds, self.predator.detection_radius, self.length)
             if len(neighbors) > 1:  # Check if there are more than just the predator in the list
                 return [(bird.X, bird.Y) for bird in neighbors]
         # If no prey or neighbors, return positions of all birds

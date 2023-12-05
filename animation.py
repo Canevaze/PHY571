@@ -10,14 +10,14 @@ from Predator import *
             
 #create swarm of birds and do an animation of the evolution
 L = 15
-N = 100
+N = 50
 V = 0.03
 eta = 0.1
 interaction_radius_1 = 1
 interaction_radius_2 = 2
 interaction_radius_3 = 3
 # Create a predator
-predator = Predator(X=7, Y=7, velocity=0.07)
+predator = Predator(X=7, Y=7, velocity=0.07, detection_radius=3)
 
 swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
 swarm.add_predator(predator)
