@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 
-from Class2 import *
+from Predator import *
         
             
 #create swarm of birds and do an animation of the evolution
@@ -17,7 +17,7 @@ interaction_radius_1 = 1
 interaction_radius_2 = 2
 interaction_radius_3 = 3
 # Create a predator
-predator = Predator(X=0, Y=0, velocity=0.06)
+predator = Predator(X=7, Y=7, velocity=0.07)
 
 swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
 swarm.add_predator(predator)
