@@ -164,11 +164,21 @@ class Predator:
         # Add predator movement logic here
         # For example, you can make the predator move towards the average position of the prey
         if prey_positions:
-            mean_prey_x = np.mean([pos[0] for pos in prey_positions])
-            mean_prey_y = np.mean([pos[1] for pos in prey_positions])
-            direction_x = (mean_prey_x - self.X + length/2) % length - length/2
-            direction_y = (mean_prey_y - self.Y + length/2) % length - length/2
+            direction_x = np.array([(pos[0] - self.X + length/2) % length - length/2 for pos in prey_positions])
+            direction_y = np.array([(pos[1] - self.Y + length/2) % length - length/2 for pos in prey_positions])
+
+            #calculate average direction
+            direction_x = np.mean(direction_x)
+            direction_y = np.mean(direction_y)
+
             distance = np.sqrt(direction_x**2 + direction_y**2)
+
+
+            # mean_prey_x = np.mean([pos[0] for pos in prey_positions])
+            # mean_prey_y = np.mean([pos[1] for pos in prey_positions])
+            # direction_x = (mean_prey_x - self.X + length/2) % length - length/2
+            # direction_y = (mean_prey_y - self.Y + length/2) % length - length/2
+            # distance = np.sqrt(direction_x**2 + direction_y**2)
             
             if distance > 0:
                 direction_x /= distance
