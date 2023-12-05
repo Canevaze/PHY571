@@ -198,6 +198,7 @@ class Swarm :
         self.dt = 1
         self.rho = N/(L**2)
         self.birds = []
+        self.predator = None
 
     def initialize(self):
         "initialize the swarm with random positions and velocities"
