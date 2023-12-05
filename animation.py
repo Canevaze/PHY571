@@ -9,14 +9,16 @@ from Class2 import *
         
             
 #create swarm of birds and do an animation of the evolution
-L = 5
-N = 100
+L = 15
+N = 10
 V = 0.03
-eta = 0.
+eta = 0.1
 interaction_radius_1 = 1
 interaction_radius_2 = 2
 interaction_radius_3 = 3
 swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
+
+#swarm = Swarm(L, N, V, eta, interaction_radius_1)
 swarm.initialize()
 
 
@@ -34,14 +36,15 @@ ax.set_ylim(0, L)
 
 # Initialize the plot objects
 points, = ax.plot([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds], 'bo')
+predator_point, = ax.plot([], [], 'ro')
 
 # Update function
 def update(q):
     swarm.evolve()
     points.set_data([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds])
+    predator_point.set_data(swarm.predator.X, swarm.predator.Y)
 
-
-    return points
+    return points, predator_point
 
 
 # Create the animation

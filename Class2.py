@@ -111,7 +111,7 @@ class Bird:
 
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
-        
+
         return sc.circmean(angles) + np.pi
     
         # Convert angles to radians
@@ -137,15 +137,51 @@ class Bird:
         #do the circmean but by weighting by the distance
         return mean_angle_deg + np.pi
         
-    
+    def theta_predator(self, predator, length):
+        "get the angle of the predator"
+
+        # Calculate the differences in coordinates for each neighbor
+
+        delta_x = (predator.X - self.X + length/2) % length - length/2
+        delta_y = (predator.Y - self.Y + length/2) % length - length/2
+
+        # Calculate the angles using arctan2
+        angles = np.arctan2(delta_y, delta_x)
+
+        return angles + np.pi
 
 
-    # def evolve(self, dt):
-    #     "get the new position of the bird"
+class Predator:
+    """A class for the predator bird"""
 
-    #     self.X += self.velocity * np.cos(self.theta) * dt
-    #     self.Y += self.velocity * np.sin(self.theta) * dt
-    #     self.theta += self.get_mean_theta(self.get_neighbors(swarm, R)) * dt
+    def __init__(self, X, Y, velocity):
+        self.X = X
+        self.Y = Y
+        self.velocity = velocity
+        self.all_positions = [(X, Y)]
+
+    def update_position(self, prey_positions, dt):
+        # Add predator movement logic here
+        # For example, you can make the predator move towards the average position of the prey
+        if prey_positions:
+            mean_prey_x = np.mean([pos[0] for pos in prey_positions])
+            mean_prey_y = np.mean([pos[1] for pos in prey_positions])
+            direction_x = mean_prey_x - self.X
+            direction_y = mean_prey_y - self.Y
+            distance = np.sqrt(direction_x**2 + direction_y**2)
+            
+            if distance > 0:
+                direction_x /= distance
+                direction_y /= distance
+                
+                self.X += direction_x * self.velocity * dt
+                self.Y += direction_y * self.velocity * dt
+
+        # Save the new position
+        self.all_positions.append((self.X, self.Y))
+
+
+
     
 class Swarm :
     "Creats the swarm state with many birds"
@@ -182,8 +218,27 @@ class Swarm :
 
         return np.sqrt(mean_vx**2 + mean_vy**2)/self.velocity_norm
 
+    # ------------------ Predator methods ------------------ #
+
+    def add_predator(self, predator):
+        self.predator = predator
+
+    def get_prey_positions(self):
+        return [(bird.X, bird.Y) for bird in self.birds]
+    
+
+
+    # ------------------ Evolution methods ------------------ #
+
     def evolve(self):
         "evolve the swarm"
+
+
+        #predator part to begin with
+        prey_positions = self.get_prey_positions()
+
+        # Update predator position
+        self.predator.update_position(prey_positions, self.dt)
         
         updated_birds = []
 
@@ -208,24 +263,32 @@ class Swarm :
 
             random_theta = np.random.uniform(-self.eta/2, self.eta/2)
 
-            neigh = bird.get_neighbors(self.birds, self.interaction_radius_1,
-                                                                        self.interaction_radius_2, self.interaction_radius_3
-                                                                        ,self.length)
+
+            #if the bird is to close from the predator, it tries to escape
+            if np.sqrt((bird.X - self.predator.X)**2 + (bird.Y - self.predator.Y)**2) < self.interaction_radius_3:
+                new_theta = bird.theta_predator(self.predator, self.length) + random_theta
+                new_theta = (new_theta + 2*np.pi) % (2*np.pi)
+
+            else:
+
+                neigh = bird.get_neighbors(self.birds, self.interaction_radius_1,
+                                                                            self.interaction_radius_2, self.interaction_radius_3
+                                                                            ,self.length)
 
 
 
-            new_theta_long = bird.get_theta_long(neigh[2],self.length) if neigh[2] else bird.theta
-            new_theta_short = bird.get_theta_short(neigh[0],self.length) if neigh[0] else bird.theta
-            new_theta_medium = bird.get_theta_medium(neigh[1]) if neigh[1] else bird.theta
+                new_theta_long = bird.get_theta_long(neigh[2],self.length) if neigh[2] else bird.theta
+                new_theta_short = bird.get_theta_short(neigh[0],self.length) if neigh[0] else bird.theta
+                new_theta_medium = bird.get_theta_medium(neigh[1]) if neigh[1] else bird.theta
 
 
 
 
-            
-            new_theta = sc.circmean([new_theta_medium, new_theta_long, new_theta_short]) + random_theta
+                
+                new_theta = sc.circmean([new_theta_medium, new_theta_long, new_theta_short]) + random_theta
 
 
-            new_theta = (new_theta + 2*np.pi) % (2*np.pi)
+                new_theta = (new_theta + 2*np.pi) % (2*np.pi)
 
 
             updated_birds.append([new_X, new_Y, new_theta])
