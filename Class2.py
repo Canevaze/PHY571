@@ -293,9 +293,16 @@ class Swarm :
 
             random_theta = np.random.uniform(-self.eta/2, self.eta/2)
 
+            disX = abs(bird.X - self.predator.X)
+            disY = abs(bird.Y - self.predator.Y)
+
+            disX = min(disX, self.length - disX)
+            disY = min(disY, self.length - disY)
+
+            dis = np.sqrt(disX**2 + disY**2)
 
             #if the bird is to close from the predator, it tries to escape
-            if np.sqrt((bird.X - self.predator.X)**2 + (bird.Y - self.predator.Y)**2) < self.interaction_radius_3:
+            if dis < self.interaction_radius_3:
                 new_theta = bird.theta_predator(self.predator, self.length) + random_theta
                 new_theta = (new_theta + 2*np.pi) % (2*np.pi)
 
