@@ -90,7 +90,8 @@ class Bird:
 
         return sc.circmean(angles)
     
-
+    
+    
     
     def get_theta_short(self,neighbors, length):
         "get the mean angle of all the angle that point to the opposite of the neighbors, also pondarate considering the proximity"
@@ -110,11 +111,32 @@ class Bird:
 
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
-        #do the circmean but by weighting by the distance
-        return sc.circmean(angles, weights = 1/np.sqrt(delta_x**2 + delta_y**2))
+        
+        return sc.circmean(angles) + np.pi
+    
+        # Convert angles to radians
+        angles = np.radians(angles)
+        
+        weights = 1 / np.sqrt(delta_x**2 + delta_y**2)
+
+        # Calculate weighted sums
+        sum_sin = np.sum(weights * np.sin(angles))
+        sum_cos = np.sum(weights * np.cos(angles))
+        
+        # Calculate the circular mean
+        mean_angle = np.arctan2(sum_sin, sum_cos)
+        
+        # Convert mean angle to degrees
+        mean_angle_deg = np.degrees(mean_angle)
+        
+        # Ensure the result is between 0 and 360 degrees
+        mean_angle_deg = (mean_angle_deg + 360) % 360
+
         
 
-        #return sc.circmean(angles) + np.pi
+        #do the circmean but by weighting by the distance
+        return mean_angle_deg + np.pi
+        
     
 
 
