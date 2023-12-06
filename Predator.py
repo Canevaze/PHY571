@@ -27,6 +27,9 @@ class Bird:
         neighbors_long = []
         neighbors_medium = []
         for bird in swarm:
+
+            number_of_endangered_birds = 0
+
             if bird != self:
                 # Calculate the distance between birds with periodic boundary conditions
                 dx = abs(self.X - bird.X)
@@ -50,7 +53,11 @@ class Bird:
                 elif distance <= R3:
                     neighbors_long.append(bird)
 
-        return neighbors_short, neighbors_medium, neighbors_long, distance
+                if bird.velocity > self.velocity:
+                    number_of_endangered_birds += 1
+                    
+
+        return neighbors_short, neighbors_medium, neighbors_long, distance, number_of_endangered_birds
 
     
     def get_theta_medium(self, neighbors):
@@ -162,7 +169,6 @@ class Predator:
         self.all_positions = [(X, Y)]
 
     def update_position(self, prey_positions, dt, length):
-        # Add predator movement logic here
         # For example, you can make the predator move towards the average position of the prey
         if prey_positions:
             direction_x = np.array([(pos[0] - self.X + length/2) % length - length/2 for pos in prey_positions])
@@ -194,6 +200,19 @@ class Predator:
 
         # Save the new position
         self.all_positions.append((self.X, self.Y))
+    
+    def get_velocity_vector(self, prey_positions, length):
+        # For example, you can make the predator move towards the average position of the prey
+        if prey_positions:
+            direction_x = np.array([(pos[0] - self.X + length/2) % length - length/2 for pos in prey_positions])
+            direction_y = np.array([(pos[1] - self.Y + length/2) % length - length/2 for pos in prey_positions])
+
+            #calculate average direction
+            direction_x = np.mean(direction_x)
+            direction_y = np.mean(direction_y)
+
+        return direction_x, direction_y
+
 
     def get_predator_neighbors(self, swarm, R, length):
         "get the neighbors of a bird with periodic boundary conditions"
@@ -224,7 +243,7 @@ class Predator:
 class Swarm :
     "Creats the swarm state with many birds"
 
-    def __init__(self, L, N, V, eta, radius1, radius2, radius3):
+    def __init__(self, L, N, V, eta, radius1, radius2, radius3, awarness, birds_acceleration):
         self.length = L
         self.number = N
         self.velocity_norm = V
@@ -232,6 +251,8 @@ class Swarm :
         self.interaction_radius_1 = radius1
         self.interaction_radius_2 = radius2
         self.interaction_radius_3 = radius3
+        self.birds_awarness = awarness
+        self.birds_acceleration = birds_acceleration
 
         self.dt = 1
         self.rho = N/(L**2)
@@ -304,11 +325,32 @@ class Swarm :
 
             #if the bird is to close from the predator, it tries to escape
             if dis < self.interaction_radius_3:
-                new_theta = bird.theta_predator(self.predator, self.length) + random_theta
-                new_theta = (new_theta + 2*np.pi) % (2*np.pi)
 
-                new_X = bird.X + (bird.velocity*1.5) * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
-                new_Y = bird.Y + (bird.velocity*1.5) * np.sin(bird.theta) * self.dt
+                #get the velocity vector of the predator
+                predator_vel = self.predator.get_velocity_vector(prey_positions, self.length)
+                predator_velocity_x = predator_vel[0]
+                predator_velocity_y = predator_vel[1]
+
+                #get the vector from the predator to the bird
+                vector_to_bird_x = bird.X - self.predator.X
+                vector_to_bird_y = bird.Y - self.predator.Y
+
+                #get the vetorial product of the two vectors
+                vetorial_product = predator_velocity_x*vector_to_bird_y - predator_velocity_y*vector_to_bird_x
+
+                #if the vetorial product is positive, the bird is on the right of the predator, so it goes even more to the right
+                if vetorial_product > 0:
+
+                    new_theta = bird.theta_predator(self.predator, self.length) + random_theta + np.pi/4
+                    new_theta = (new_theta + 2*np.pi) % (2*np.pi)
+                
+                #if the vetorial product is negative, the bird is on the left of the predator, so it goes even more to the left
+                else:
+                    new_theta = bird.theta_predator(self.predator, self.length) + random_theta - np.pi/4
+                    new_theta = (new_theta + 2*np.pi) % (2*np.pi)
+
+                new_X = bird.X + (bird.velocity*self.birds_acceleration) * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
+                new_Y = bird.Y + (bird.velocity*self.birds_acceleration) * np.sin(bird.theta) * self.dt
 
             else:
 
@@ -330,8 +372,16 @@ class Swarm :
 
 
                 new_theta = (new_theta + 2*np.pi) % (2*np.pi)
-                new_X = bird.X + bird.velocity * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
-                new_Y = bird.Y + bird.velocity * np.sin(bird.theta) * self.dt
+                
+                #if to many endangered birds, bird velocity increases
+                if neigh[4] > (1 - self.birds_awarness)*(len(neigh[2])+len(neigh[1])+len(neigh[0])) + 1:
+                    new_X = bird.X + (bird.velocity*self.birds_acceleration) * np.cos(bird.theta) * self.dt
+                    new_Y = bird.Y + (bird.velocity*self.birds_acceleration) * np.sin(bird.theta) * self.dt
+
+                else:
+
+                    new_X = bird.X + bird.velocity * np.cos(bird.theta) * self.dt    # birds are indistinguishable, so it doesn't matter which way the list goes
+                    new_Y = bird.Y + bird.velocity * np.sin(bird.theta) * self.dt
 
 
 
