@@ -263,8 +263,8 @@ class Swarm :
         "initialize the swarm with random positions and velocities"
 
         for i in range(self.number):
-            X = rnd.uniform(0, self.length)
-            Y = rnd.uniform(0, self.length)
+            X = rnd.uniform(0, self.length/4)
+            Y = rnd.uniform(0, self.length/4)
             theta = rnd.uniform(0, 2*np.pi)
             
 
@@ -277,6 +277,13 @@ class Swarm :
         mean_vy = np.mean([bird.velocity * np.sin(sc.circmean(bird.all_thetas[-1])) for bird in self.birds])
 
         return np.sqrt(mean_vx**2 + mean_vy**2)/self.velocity_norm
+
+    def get_mean_norm_velocity(self):
+        "get the mean norm velocity of the swarm"
+
+        mean_v = np.mean([bird.velocity for bird in self.birds])
+
+        return mean_v
 
     # ------------------ Predator methods ------------------ #
 
