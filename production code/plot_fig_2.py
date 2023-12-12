@@ -6,16 +6,19 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 from tqdm import tqdm
 
-from Class import *
+import sys
+sys.path.append('.')
+
+from our_library import Complex_model as cm
         
             
 #create swarm of birds and do an animation of the evolution
-avg = 20
+avg = 5
 nb_pts = 50
 
 def retrieve_param_eta(eta,it,N,V, L, R, interaction_radius_1, interaction_radius_2, interaction_radius_3):
-    swarm = Swarm(L, N, V, eta, R)
-    #swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
+    #swarm = Swarm(L, N, V, eta, R)
+    swarm = cm.Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
     swarm.initialize()
 
     for i in range(it):
@@ -23,7 +26,7 @@ def retrieve_param_eta(eta,it,N,V, L, R, interaction_radius_1, interaction_radiu
     
     return swarm.get_swarm_mean_velocity()
 
-def plot_2_a(it=200,N=40,V=0.03, L=5, R=1, interaction_radius_1=0.5, interaction_radius_2=1, interaction_radius_3=2):
+def plot_2_a(it=200,N=40,V=0.03, L=5, R=1, interaction_radius_1=1, interaction_radius_2=2, interaction_radius_3=3):
     eta = np.linspace(0.0,5,nb_pts)
     v = []
     for e in tqdm(eta):
@@ -33,8 +36,8 @@ def plot_2_a(it=200,N=40,V=0.03, L=5, R=1, interaction_radius_1=0.5, interaction
         v.append(np.mean(average))
 
     #save the values
-    np.save(f'v_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class1.npy', v)
-    np.save(f'eta_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class1.npy', eta)
+    np.save(f'v_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class2.npy', v)
+    np.save(f'eta_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class2.npy', eta)
 
 
     #plot it all
@@ -75,4 +78,4 @@ def plot_2_b(it=200,N=40,V=0.03, eta=2 , R=1, interaction_radius_1=0.5, interact
     #            + ", R2 = " + str(interaction_radius_2) + ", R3 = " + str(interaction_radius_3))
     plt.show()
 
-plot_2_b()
+plot_2_a()
