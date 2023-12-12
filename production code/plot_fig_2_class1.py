@@ -54,7 +54,7 @@ def plot_2_a(it=200,N=40,V=0.03, L=6.2, R=1):
     #save the values
     np.save(f'v_avg_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class1.npy', v_avg)
     np.save(f'eta_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class1.npy', eta)
-    np.save(f'v_uncertainty_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class2.npy', v_uncertainty)
+    np.save(f'v_uncertainty_it_{it}_N_{N}_V_{V}_L_{L}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_Class1.npy', v_uncertainty)
 
 
     #plot it all
