@@ -94,6 +94,39 @@ def find_eta_critical():
 
     return eta_critical_values[np.argmin(mse_values)]
 
+def find_eta_critical_straightest():
+    eta_critical_values = np.linspace(0.1, 5, 100)
+    v = np.load('v_it_100_N_40_V_0.03_L_6.2_R_1_avg_50_nb_pts_50.npy')
+    eta = np.load('eta_it_100_N_40_V_0.03_L_6.2_R_1_avg_50_nb_pts_50.npy')
+    
+    min_error = float('inf')
+    best_eta_critical = None
+
+    for eta_critical in eta_critical_values:
+        x_values = (eta_critical - eta) / eta_critical
+
+        # Filter out NaN and infinity values
+        valid_indices = np.isfinite(v) & np.isfinite(x_values)
+        v_valid = v[valid_indices]
+        x_values_valid = x_values[valid_indices]
+
+        # Reshape for Linear Regression
+        x_values_valid = x_values_valid.reshape(-1, 1)
+
+        # Fit a line using Linear Regression
+        model = LinearRegression().fit(x_values_valid, np.log(v_valid))
+
+        # Get the mean squared error between the data and the fitted line
+        y_pred = model.predict(x_values_valid)
+        error = mean_squared_error(np.log(v_valid), y_pred)
+
+        # Update the best eta_critical if the error is lower
+        if error < min_error:
+            min_error = error
+            best_eta_critical = eta_critical
+
+    return best_eta_critical
+
 def find_eta_critical_v2(eta_range, generate_plot_data):
     min_error = float('inf')
     best_eta = None
