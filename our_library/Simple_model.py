@@ -8,9 +8,10 @@ from matplotlib.animation import FuncAnimation
 class Bird:
     """
     
-    A configuration of bird parameters
+    A configuration of bird parameters, within the class Simple_model
+    The birds only interact with their neighbors, and the neighbors are defined by a radius of interaction.
+    The birds try to align their velocity with the mean velocity of their neighbors.
 
-    
     """
 
     def __init__(self, X, Y, theta, V):
@@ -66,7 +67,17 @@ class Bird:
 
     
     def get_mean_theta(self, neighbors):
-        "get the average theta of the neighbors, according to the formula in the paper"
+        """"
+        
+        Get the average velocity direction of the neighbors, according to the formula in the paper
+        
+        :param neighbors: The neighbors of the chosen bird.
+        :type neighbors: list
+
+        :return: The average angle of the velocity of the neighbors.
+        :rtype: float
+        
+        """
         thetas = [bird.theta for bird in neighbors]
 
         mean = np.mean(np.sin(thetas))/np.mean(np.cos(thetas))

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 
-from our_library import Complex_model as cm
+from ..our_library import Complex_model as cm
         
             
 #create swarm of birds and do an animation of the evolution
