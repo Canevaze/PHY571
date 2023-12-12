@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 
-from Class2 import *
+from our_library import Complex_model as cm
         
             
 #create swarm of birds and do an animation of the evolution
@@ -18,7 +18,7 @@ interaction_radius_2 = 2
 interaction_radius_3 = 3
 
 
-swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
+swarm = cm.Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3)
 swarm.initialize()
 
 

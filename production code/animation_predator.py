@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 
-from Predator import *
+from our_library import Predator_model as pm
         
             
 #create swarm of birds and do an animation of the evolution
@@ -20,9 +20,9 @@ birds_awareness = 0.8   #close to 1 = very aware, close to 0 = not aware
 birds_acceleration = 2  #how many times the base speed
 
 # Create a predator
-predator = Predator(X=7, Y=7, velocity=0.07, detection_radius=3)
+predator = pm.Predator(X=7, Y=7, velocity=0.07, detection_radius=3)
 
-swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3, birds_awareness, birds_acceleration)
+swarm = pm.Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3, birds_awareness, birds_acceleration)
 swarm.add_predator(predator)
 #swarm = Swarm(L, N, V, eta, interaction_radius_1)
 swarm.initialize()
