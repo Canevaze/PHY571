@@ -9,15 +9,15 @@ import scipy.stats as sc
 class Bird:
     """
     
-    A configuration of bird parameters, within the class Predator_model
-    The birds only interact with their neighbors, and the neighbors are defined by a radius of interaction.
-    Their neighbors are divided into three groups.
-    The ones within R1 are considered short range neighbors, and the birds try to avoid them in order to avoid collisions.
-    The ones within R2 are considered medium range neighbors, and the birds try to align their velocity with the mean velocity of their neighbors.
-    The ones within R3 are considered long range neighbors, and the birds try to go straight towards them.
+    A configuration of bird parameters, within the class Predator_model.
+    The bird only interact with its neighbors, and the neighbors are defined by a radius of interaction.
+    Its neighbors are divided into three groups.
+    The ones within R1 are considered short range neighbors, and the bird tries to avoid them in order to avoid collisions.
+    The ones within R2 are considered medium range neighbors, and the bird tries to align its velocity with the mean velocity of its neighbors.
+    The ones within R3 are considered long range neighbors, and the bird tries to go straight towards them.
 
     In addition, a predator is added.
-    The birds try to avoid the predator, and the predator tries to catch the birds.
+    The bird tries to avoid the predator, and the predator tries to catch the bird.
     """
 
     def __init__(self, X, Y, theta, V):
@@ -51,10 +51,10 @@ class Bird:
         :param R3: The long range radius of interaction, i.e. the distance in which birds are considered as long range neighbors. The bird tries to go straight towards them.
         :type R3: int
 
-        :param L: The size of the box, with peridic conditions.
+        :param L: The size of the box, with periodic conditions.
         :type L: int
         
-        :return: The three groups of neighbors of the chosen bird.
+        :return: The three groups of neighbors of the bird.
         :rtype: tuple of lists
         
         """
@@ -96,14 +96,27 @@ class Bird:
         return neighbors_short, neighbors_medium, neighbors_long, distance, number_of_endangered_birds
 
     
-    def get_theta_medium(self, neighbors):
-        "get the average theta of the neighbors, according to the formula in the paper"
+    def get_theta_medium(self, neighbors_medium):
+        """"
+        
+        Get the average velocity direction of the mdeium range neighbors, according to the formula in the paper.
+        
+        :param self: The bird itself.
+        :type self: Class
+        
+        :param neighbors: The medium range neighbors of the chosen bird.
+        :type neighbors: list
 
-        if not neighbors:   # so it is verified when calculating the new theta
+        :return: The average velocity direction of the medium range neighbors.
+        :rtype: float
+        
+        """
+
+        if not neighbors_medium:   # so it is verified when calculating the new theta
             return np.nan
         
 
-        thetas = [bird.theta for bird in neighbors]
+        thetas = [bird.theta for bird in neighbors_medium]
 
         mean = np.mean(np.sin(thetas))/np.mean(np.cos(thetas))
 
@@ -114,16 +127,32 @@ class Bird:
         
 
         
-    def get_theta_long(self,neighbors,length):
-        "get the mean angle of all the angle that point to neighbors"
+    def get_theta_long(self,neighbors_long,L):
+        """"
+        
+        Get the mean angle of all the angles that point to long range neighbors, so that the bird goes straight towards them.
+        
+        :param self: The bird itself.
+        :type self: Class
+        
+        :param neighbors: The long range neighbors of the chosen bird.
+        :type neighbors: list
 
-        if not neighbors:   # so it is verified when calculating the new theta
+        :param L: The size of the box, with peroidic conditions.
+        :type L: int
+
+        :return: The mean angle of all the angles that point to long range neighbors.
+        :rtype: float
+        
+        """
+
+        if not neighbors_long:   # so it is verified when calculating the new theta
             return np.nan
 
         # Calculate the differences in coordinates for each neighbor
 
-        delta_x = np.array([(neighbor.X - self.X + length/2) % length - length/2 for neighbor in neighbors])
-        delta_y = np.array([(neighbor.Y - self.Y + length/2) % length - length/2 for neighbor in neighbors])
+        delta_x = np.array([(neighbor.X - self.X + L/2) % L - L/2 for neighbor in neighbors_long])
+        delta_y = np.array([(neighbor.Y - self.Y + L/2) % L - L/2 for neighbor in neighbors_long])
 
         #delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
         #delta_y = np.array([neighbor.Y - self.Y for neighbor in neighbors])
@@ -136,17 +165,33 @@ class Bird:
     
     
     
-    def get_theta_short(self,neighbors, length):
-        "get the mean angle of all the angle that point to the opposite of the neighbors, also pondarate considering the proximity"
+    def get_theta_short(self,neighbors_short, L):
+        """"
+        
+        Get the mean angle of all the angles that point to the opposite of the short range neighbors, so that the bird avoids them.
+        
+        :param self: The bird itself.
+        :type self: Class
+        
+        :param neighbors: The short range neighbors of the chosen bird.
+        :type neighbors: list
 
-        if not neighbors:   # so it is verified when calculating the new theta
+        :param L: The size of the box, with periodic conditions.
+        :type L: int
+
+        :return: The mean angle of all the angles that point to the opposite of the short range neighbors.
+        :rtype: float
+        
+        """
+
+        if not neighbors_short:   # so it is verified when calculating the new theta
             return np.nan
         
 
         # Calculate the differences in coordinates for each neighbor
 
-        delta_x = np.array([(neighbor.X - self.X + length/2) % length - length/2 for neighbor in neighbors])
-        delta_y = np.array([(neighbor.Y - self.Y + length/2) % length - length/2 for neighbor in neighbors])
+        delta_x = np.array([(neighbor.X - self.X + L/2) % L - L/2 for neighbor in neighbors_short])
+        delta_y = np.array([(neighbor.Y - self.Y + L/2) % L - L/2 for neighbor in neighbors_short])
 
 
         #delta_x = np.array([neighbor.X - self.X for neighbor in neighbors])
@@ -160,7 +205,7 @@ class Bird:
         # Convert angles to radians
         angles = np.radians(angles)
         
-        weights = 1 / np.sqrt(delta_x**2 + delta_y**2)
+        weights = 1 / np.sqrt(delta_x**2 + delta_y**2) ## we tried to ponderate the angles by the distance but it made the behavior less realistic
 
         # Calculate weighted sums
         sum_sin = np.sum(weights * np.sin(angles))
@@ -180,13 +225,26 @@ class Bird:
         #do the circmean but by weighting by the distance
         return mean_angle_deg + np.pi
         
-    def theta_predator(self, predator, length):
-        "get the angle of the predator"
+    def theta_predator(self, predator, L):
+        """"
+        
+        Get the angle that points to the predator
+        
+        :param self: The bird itself.
+        :type self: Class
+        
+        :param predator: The predator.
+        :type predator: Class
 
-        # Calculate the differences in coordinates for each neighbor
+        :param L: The size of the box, with periodic conditions.
+        :type L: int
 
-        delta_x = (predator.X - self.X + length/2) % length - length/2
-        delta_y = (predator.Y - self.Y + length/2) % length - length/2
+        :return: The angle that points to the predator.
+        :rtype: float
+
+        """
+        delta_x = (predator.X - self.X + L/2) % L - L/2
+        delta_y = (predator.Y - self.Y + L/2) % L - L/2
 
         # Calculate the angles using arctan2
         angles = np.arctan2(delta_y, delta_x)
@@ -195,7 +253,11 @@ class Bird:
 
 
 class Predator:
-    """A class for the predator bird"""
+    """
+    
+    A class for the predator bird
+    
+    """
 
     def __init__(self, X, Y, velocity, detection_radius):
         self.X = X
@@ -204,11 +266,31 @@ class Predator:
         self.detection_radius = detection_radius
         self.all_positions = [(X, Y)]
 
-    def update_position(self, prey_positions, dt, length):
+    def update_position(self, prey_positions, dt, L):
+        """
+
+        Update the position of the predator, according to the position of the preys.
+        
+        :param self: The predator itself.
+        :type self: Class
+
+        :param prey_positions: The positions of the preys inside the detection radius. If no bird is inside the detection raidus, the predator aims for the mean position of the swarm.
+        :type prey_positions: list
+
+        :param dt: The time step.
+        :type dt: float
+        
+        :param L: The size of the box, with periodic conditions.
+        :type L: int
+
+        :return: the list new_positions, updated with the new position of the predator at the end of the list. 
+        :rtype: list
+
+        """      
         # For example, you can make the predator move towards the average position of the prey
         if prey_positions:
-            direction_x = np.array([(pos[0] - self.X + length/2) % length - length/2 for pos in prey_positions])
-            direction_y = np.array([(pos[1] - self.Y + length/2) % length - length/2 for pos in prey_positions])
+            direction_x = np.array([(pos[0] - self.X + L/2) % L - L/2 for pos in prey_positions])
+            direction_y = np.array([(pos[1] - self.Y + L/2) % L - L/2 for pos in prey_positions])
 
             #calculate average direction
             direction_x = np.mean(direction_x)
@@ -231,17 +313,34 @@ class Predator:
                 self.Y += direction_y * self.velocity * dt
 
                 # Apply periodic boundary conditions  (other way of doing it, compared to what we did with the birds)
-                self.X = (self.X + length) % length
-                self.Y = (self.Y + length) % length
+                self.X = (self.X + L) % L
+                self.Y = (self.Y + L) % L
 
         # Save the new position
         self.all_positions.append((self.X, self.Y))
     
-    def get_velocity_vector(self, prey_positions, length):
+    def get_velocity_vector(self, prey_positions, L):
+        """
+
+        Get the components of the velocity vector of the predator, according to the position of the preys.
+        
+        :param self: The predator itself.
+        :type self: Class
+        
+        :param prey_positions: The positions of the preys inside the detection radius. If no bird is inside the detection raidus, the predator aims for the mean position of the swarm.
+        :type prey_positions: list
+
+        :param L: The size of the box, with periodic conditions.
+        :type L: int
+
+        :return: The components of the velocity vector of the predator.
+        :rtype: tuple of floats
+
+        """ 
         # For example, you can make the predator move towards the average position of the prey
         if prey_positions:
-            direction_x = np.array([(pos[0] - self.X + length/2) % length - length/2 for pos in prey_positions])
-            direction_y = np.array([(pos[1] - self.Y + length/2) % length - length/2 for pos in prey_positions])
+            direction_x = np.array([(pos[0] - self.X + L/2) % L - L/2 for pos in prey_positions])
+            direction_y = np.array([(pos[1] - self.Y + L/2) % L - L/2 for pos in prey_positions])
 
             #calculate average direction
             direction_x = np.mean(direction_x)
@@ -250,8 +349,27 @@ class Predator:
         return direction_x, direction_y
 
 
-    def get_predator_neighbors(self, swarm, R, length):
-        "get the neighbors of a bird with periodic boundary conditions"
+    def get_predator_neighbors(self, swarm, R, L):
+        """
+        
+        Get the neighbors of the predator. This includes birds on the other side of the grid because there are periodic boundary conditions.
+        
+        :param self: The predator itself.
+        :type self: Class
+
+        :param swarm: The swarm the predator belongs to.
+        :type swarm: Class
+    
+        :param R: The radius of interaction, i.e. the distance in which birds are considered as neighbors.
+        :type R: int
+
+        :param L: The size of the box, with periodic conditions.
+        :type L: int
+        
+        :return: The neighbors of the predator.
+        :rtype: list
+        
+        """
 
         neighbors = [self]
         for bird in swarm:
@@ -261,8 +379,8 @@ class Predator:
                 dy = self.Y - bird.Y
 
                 # Apply periodic boundary conditions
-                dx = (dx + length / 2) % length - length / 2
-                dy = (dy + length / 2) % length - length / 2
+                dx = (dx + L / 2) % L - L / 2
+                dy = (dy + L / 2) % L - L / 2
 
                 distance = np.sqrt(dx**2 + dy**2)
 
@@ -277,8 +395,11 @@ class Predator:
 
     
 class Swarm :
-    "Creats the swarm state with many birds"
-
+    """
+    
+    Creates the swarm state with many birds.
+    
+    """
     def __init__(self, L, N, V, eta, radius1, radius2, radius3, awarness, birds_acceleration):
         self.length = L
         self.number = N
@@ -296,8 +417,14 @@ class Swarm :
         self.predator = None
 
     def initialize(self):
-        "initialize the swarm with random positions and velocities"
+        """
+        
+        Initialize the swarm with random positions and velocities.
 
+        :param self: The swarm itself.
+        :type self: Class
+        
+        """
         for i in range(self.number):
             X = rnd.uniform(0, self.length)
             Y = rnd.uniform(0, self.length)
@@ -307,15 +434,34 @@ class Swarm :
             self.birds.append(Bird(X, Y, theta, self.velocity_norm))
 
     def get_swarm_mean_velocity(self):
-        "get the mean vectorial velocity of the swarm, which is the order parameter"
+        """
+        
+        Get the mean vectorial velocity of the swarm, which is the order parameter.
 
+        :param self: The swarm itself.
+        :type self: Class
+
+        :return: The mean vectorial velocity of the swarm.  
+        :rtype: float
+        
+        """
         mean_vx = np.mean([bird.velocity * np.cos(sc.circmean(bird.all_thetas[-1])) for bird in self.birds])
         mean_vy = np.mean([bird.velocity * np.sin(sc.circmean(bird.all_thetas[-1])) for bird in self.birds])
 
         return np.sqrt(mean_vx**2 + mean_vy**2)/self.velocity_norm
 
     def get_mean_norm_velocity(self):
-        "get the mean norm velocity of the swarm"
+        """
+        
+        Get the mean norm velocity of the swarm.
+
+        :param self: The swarm itself.
+        :type self: Class
+
+        :return: The mean norm velocity of the swarm.
+        :rtype: float
+        
+        """
 
         mean_v = np.mean([bird.velocity for bird in self.birds])
 
@@ -324,10 +470,32 @@ class Swarm :
     # ------------------ Predator methods ------------------ #
 
     def add_predator(self, predator):
+        """
+
+        Add the predator to the swarm.
+
+        :param self: The swarm itself.
+        :type self: Class
+
+        :param predator: The predator.
+        :type predator: Class
+
+        """
         self.predator = predator
 
 
     def get_prey_positions(self):
+        """
+        
+        Get the positions of the preys inside the detection radius of the predator. If no bird is inside the detection radius, gives the positions of all the birds.
+
+        :param self: The swarm itself.
+        :type self: Class
+
+        :return: The positions of the preys inside the detection radius of the predator. If no bird is inside the detection radius, gives the positions of all the birds.
+        :rtype: list
+        
+        """
         if self.predator:
             neighbors = self.predator.get_predator_neighbors(self.birds, self.predator.detection_radius, self.length)
             if len(neighbors) > 1:  # Check if there are more than just the predator in the list
@@ -340,7 +508,14 @@ class Swarm :
     # ------------------ Evolution methods ------------------ #
 
     def evolve(self):
-        "evolve the swarm"
+        """"
+        
+        Evolve the swarm to the next time step.
+
+        :param self: The swarm itself.
+        :type self: Class
+        
+        """
 
 
         #predator part to begin with

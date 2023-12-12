@@ -8,9 +8,9 @@ from matplotlib.animation import FuncAnimation
 class Bird:
     """
     
-    A configuration of bird parameters, within the class Simple_model
-    The birds only interact with their neighbors, and the neighbors are defined by a radius of interaction.
-    The birds try to align their velocity with the mean velocity of their neighbors.
+    A configuration of bird parameters, within the class Simple_model.
+    The bird only interacts with its neighbors, and the neighbors are defined by a radius of interaction.
+    The bird tries to align its velocity with the mean velocity of its neighbors.
 
     """
 
@@ -39,7 +39,7 @@ class Bird:
         :param R: The radius of interaction, i.e. the distance in which birds are considered as neighbors.
         :type R: int
 
-        :param L: The size of the box, with peridic conditions.
+        :param L: The size of the box, with periodic conditions.
         :type L: int
         
         :return: The neighbors of the chosen bird.
@@ -69,12 +69,15 @@ class Bird:
     def get_mean_theta(self, neighbors):
         """"
         
-        Get the average velocity direction of the neighbors, according to the formula in the paper
+        Get the average velocity direction of the neighbors, according to the formula in the paper.
         
+        :param self: The bird itself.
+        :type self: Class
+
         :param neighbors: The neighbors of the chosen bird.
         :type neighbors: list
 
-        :return: The average angle of the velocity of the neighbors.
+        :return: The average velocity direction of the neighbors.
         :rtype: float
         
         """
@@ -86,7 +89,7 @@ class Bird:
         else :
             return np.arctan(mean)
 
-    # def evolve(self, dt):
+    # def evolve(self, dt): ## at first we had an evolve function by bird, but then it made more sense to have it by swarm
     #     "get the new position of the bird"
 
     #     self.X += self.velocity * np.cos(self.theta) * dt
@@ -94,7 +97,11 @@ class Bird:
     #     self.theta += self.get_mean_theta(self.get_neighbors(swarm, R)) * dt
     
 class Swarm :
-    "Creates the swarm state with many birds"
+    """
+
+    Creates the swarm state with many birds.
+
+    """
 
     def __init__(self, L, N, V, eta, radius):
         self.length = L
@@ -108,7 +115,14 @@ class Swarm :
         self.birds = []
 
     def initialize(self):
-        "initialize the swarm with random positions and velocities"
+        """
+        
+        Initialize the swarm with random positions and velocities.
+
+        :param self: The swarm itself.
+        :type self: Class
+
+        """
 
         for i in range(self.number):
             X = rnd.uniform(0, self.length)
@@ -118,7 +132,14 @@ class Swarm :
             self.birds.append(Bird(X, Y, theta, self.velocity_norm))
 
     def get_swarm_mean_velocity(self):
-        "get the mean vectorial velocity of the swarm, which is the order parameter"
+        """"
+        
+        Get the mean vectorial velocity of the swarm, which is the order parameter.
+
+        :param self: The swarm itself.
+        :type self: Class
+        
+        """
 
         mean_vx = np.mean([bird.velocity * np.cos(np.mean(bird.all_thetas[-1])) for bird in self.birds])
         mean_vy = np.mean([bird.velocity * np.sin(np.mean(bird.all_thetas[-1])) for bird in self.birds])
@@ -126,7 +147,14 @@ class Swarm :
         return np.sqrt(mean_vx**2 + mean_vy**2)/self.velocity_norm
 
     def evolve(self):
-        "evolve the swarm"
+        """"
+        
+        Evolve the swarm to the next time step.
+        
+        :param self: The swarm itself.
+        :type self: Class
+
+        """
         
         updated_birds = []
 
