@@ -64,8 +64,8 @@ def plot_2_a(it=200, N=40, V=0.03, L=6.2, interaction_radius_1=1, interaction_ra
         for i in range(avg):
             velocities.append(retrieve_param_eta(e, it, N, V, L, interaction_radius_1, interaction_radius_2, interaction_radius_3))
 
-        avgrage, uncertainty = calculate_avg_and_uncertainty(velocities)
-        v_avg.append(avgrage)
+        average, uncertainty = calculate_avg_and_uncertainty(velocities)
+        v_avg.append(average)
         v_uncertainty.append(uncertainty)
 
     # Save the values
