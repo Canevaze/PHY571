@@ -43,9 +43,10 @@ def plot_v_vs_eta_subplot(v, eta, eta_critical_values):
         axes.scatter(x_values, v, label=f'eta_critical = {eta_critical}')
         
         axes.set_ylim(0.6, 1)
-        #axes.set_yscale('log')
+        axes.set_yscale('log')
         axes.set_xlim(0.01, 1)
-        #axes.set_xscale('log')
+        axes.set_xscale('log')
+        
         # Add labels and title to the first subplot
         if i == 0:
             axes.set_xlabel(f'({eta_critical} - eta) / {eta_critical}')
@@ -67,23 +68,31 @@ def plot_v_vs_eta_subplot(v, eta, eta_critical_values):
 
 # i want to build a function that finds the parameter eta_critical for which the plot is the straightest
 
+from sklearn.metrics import mean_squared_error
+
 def find_eta_critical():
     eta_critical_values = np.linspace(0.1, 5, 100)
     v = np.load('v_it_100_N_40_V_0.03_L_6.2_R_1_avg_50_nb_pts_50.npy')
     eta = np.load('eta_it_100_N_40_V_0.03_L_6.2_R_1_avg_50_nb_pts_50.npy')
     
-    v_eta_critical = []
+    mse_values = []
 
     for eta_critical in eta_critical_values:
         x_values = (eta_critical - eta) / eta_critical
 
-        # Use Linear Regression instead of np.polyfit
-        model = LinearRegression().fit(x_values.reshape(-1, 1), v)
-        slope = model.coef_[0]
+        # Use log-transformed v for straightness on a log scale
+        log_v = np.log(v)
 
-        v_eta_critical.append(slope)
+        # Filter out NaN and infinity values
+        valid_indices = np.isfinite(log_v) & np.isfinite(x_values)
+        log_v_valid = log_v[valid_indices]
+        x_values_valid = x_values[valid_indices]
 
-    return eta_critical_values[np.argmax(v_eta_critical)]
+        # Calculate the mean squared error between log_v and x_values
+        mse = mean_squared_error(log_v_valid, x_values_valid)
+        mse_values.append(mse)
+
+    return eta_critical_values[np.argmin(mse_values)]
 
 def find_eta_critical_v2(eta_range, generate_plot_data):
     min_error = float('inf')
