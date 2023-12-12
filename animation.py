@@ -5,26 +5,18 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 
-from Predator import *
+from Class import *
         
             
 #create swarm of birds and do an animation of the evolution
-L = 100
+L = 15
 N = 300
 V = 0.03
 eta = 0.1
-interaction_radius_1 = 3
-interaction_radius_2 = 6
-interaction_radius_3 = 12
-birds_awarness = 0.8   #close to 1 = very aware, close to 0 = not aware
-birds_acceleration = 2  #how many times the base speed
+interaction_radius_1 = 1
 
-# Create a predator
-predator = Predator(X=40, Y=40, velocity=0.07, detection_radius=3)
 
-swarm = Swarm(L, N, V, eta, interaction_radius_1, interaction_radius_2, interaction_radius_3, birds_awarness, birds_acceleration)
-swarm.add_predator(predator)
-#swarm = Swarm(L, N, V, eta, interaction_radius_1)
+swarm = Swarm(L, N, V, eta, interaction_radius_1)
 swarm.initialize()
 
 
@@ -42,15 +34,13 @@ ax.set_ylim(0, L)
 
 # Initialize the plot objects
 points, = ax.plot([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds], 'bo')
-predator_point, = ax.plot([], [], 'ro')
 
 # Update function
 def update(q):
     swarm.evolve()
     points.set_data([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds])
-    predator_point.set_data(swarm.predator.X, swarm.predator.Y)
 
-    return points, predator_point
+    return points
 
 
 # Create the animation

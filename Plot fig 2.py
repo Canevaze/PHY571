@@ -6,7 +6,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FuncAnimation
 from tqdm import tqdm
 
-from Class import *
+from Class2 import *
         
             
 #create swarm of birds and do an animation of the evolution
@@ -75,4 +75,4 @@ def plot_2_b(it=200,N=40,V=0.03, eta=2 , R=1, interaction_radius_1=0.5, interact
     #            + ", R2 = " + str(interaction_radius_2) + ", R3 = " + str(interaction_radius_3))
     plt.show()
 
-plot_2_b()
+plot_2_a()

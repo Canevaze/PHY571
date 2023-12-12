@@ -263,8 +263,8 @@ class Swarm :
         "initialize the swarm with random positions and velocities"
 
         for i in range(self.number):
-            X = rnd.uniform(0, self.length/4)
-            Y = rnd.uniform(0, self.length/4)
+            X = rnd.uniform(0, self.length)
+            Y = rnd.uniform(0, self.length)
             theta = rnd.uniform(0, 2*np.pi)
             
 
