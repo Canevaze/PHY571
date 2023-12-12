@@ -60,7 +60,7 @@ def plot_2_a(it=200,N=40,V=0.03, L=6.2, R=1):
     #plot it all
     
     plt.errorbar(eta, v_avg, yerr=v_uncertainty, fmt='o', label='Average with Uncertainty')
-    plt.scatter(eta,v)
+    plt.scatter(eta,v_avg)
     plt.xlabel("eta")
     plt.ylabel("v")
     #display the parameter values
