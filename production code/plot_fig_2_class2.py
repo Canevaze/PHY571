@@ -25,13 +25,13 @@ def retrieve_param_eta(eta,it,N,V, L, interaction_radius_1, interaction_radius_2
     
     return swarm.get_swarm_mean_velocity()
 
-def plot_2_a(it=200,N=40,V=0.03, L=5, R=1, interaction_radius_1=1, interaction_radius_2=2, interaction_radius_3=3):
+def plot_2_a(it=100,N=40,V=0.03, L=6.2, interaction_radius_1=1, interaction_radius_2=2, interaction_radius_3=3):
     eta = np.linspace(0.0,5,nb_pts)
     v = []
     for e in tqdm(eta):
         average = []
         for i in range(avg):
-            average.append(retrieve_param_eta(e,it,N,V, L, R, interaction_radius_1, interaction_radius_2, interaction_radius_3))
+            average.append(retrieve_param_eta(e,it,N,V, L, interaction_radius_1, interaction_radius_2, interaction_radius_3))
         v.append(np.mean(average))
 
     #save the values
