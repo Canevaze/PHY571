@@ -7,7 +7,18 @@ from matplotlib.animation import FuncAnimation
 import scipy.stats as sc
 
 class Bird:
-    """A configuration of bird parameters"""
+    """
+    
+    A configuration of bird parameters, within the class Predator_model
+    The birds only interact with their neighbors, and the neighbors are defined by a radius of interaction.
+    Their neighbors are divided into three groups.
+    The ones within R1 are considered short range neighbors, and the birds try to avoid them in order to avoid collisions.
+    The ones within R2 are considered medium range neighbors, and the birds try to align their velocity with the mean velocity of their neighbors.
+    The ones within R3 are considered long range neighbors, and the birds try to go straight towards them.
+
+    In addition, a predator is added.
+    The birds try to avoid the predator, and the predator tries to catch the birds.
+    """
 
     def __init__(self, X, Y, theta, V):
         self.X = X
@@ -21,7 +32,32 @@ class Bird:
 
 
     def get_neighbors(self, swarm, R1, R2, R3, L):
-        "get the neighbors of a bird with periodic boundary conditions"
+        """
+        
+        Get the neighbors of a bird. This includes birds on the other side of the grid because there are periodic boundary conditions.
+        
+        :param self: The bird itself.
+        :type self: Class
+
+        :param swarm: The swarm the bird belongs to.
+        :type swarm: Class
+    
+        :param R1: The short range radius of interaction, i.e. the distance in which birds are considered as short range neighbors. The bird tries to avoid them.
+        :type R1: int
+
+        :param R2: The mdeium range radius of interaction, i.e. the distance in which birds are considered as mdeium range neighbors. The bird tries to align its velocity with their mean velocity.
+        :type R2: int
+
+        :param R3: The long range radius of interaction, i.e. the distance in which birds are considered as long range neighbors. The bird tries to go straight towards them.
+        :type R3: int
+
+        :param L: The size of the box, with peridic conditions.
+        :type L: int
+        
+        :return: The three groups of neighbors of the chosen bird.
+        :rtype: tuple of lists
+        
+        """
 
         neighbors_short = []
         neighbors_long = []
