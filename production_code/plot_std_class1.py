@@ -32,7 +32,7 @@ def calculate_avg_and_uncertainty(data):
 
 def plot(it=200,V=0.03, R=1):
     eta = 0.75
-    N = np.linspace(100,500,nb_pts)
+    N = np.linspace(100,500,nb_pts).astype(int)
     L = np.sqrt(N/40)*6.2
     
     # v = []
