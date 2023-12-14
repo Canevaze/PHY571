@@ -13,7 +13,7 @@ from our_library import Simple_model as sm
         
             
 #create swarm of birds and do an animation of the evolution
-avg = 5
+avg = 50
 nb_pts = 50
 
 def retrieve_param_eta(eta,it,N,V, L, R):
@@ -31,7 +31,7 @@ def calculate_avg_and_uncertainty(data):
     return avg, uncertainty
 
 def plot(it=200,V=0.03, R=1):
-    eta = 0.5
+    eta = 0.75
     N = np.linspace(100,500,nb_pts)
     L = np.sqrt(N/40)*6.2
     
