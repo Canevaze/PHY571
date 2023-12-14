@@ -7,7 +7,7 @@ from matplotlib.animation import FuncAnimation
 from tqdm import tqdm
 
 import sys
-sys.path.append('.')
+sys.path.append('D:\Github\PHY571')
 
 from our_library import Simple_model as sm
         
@@ -34,7 +34,6 @@ def plot(it=200,V=0.03, R=1):
     eta = 0.75
     N = np.linspace(100,500,nb_pts).astype(int)
     L = np.sqrt(N/40)*6.2
-    
     # v = []
     # for e in tqdm(eta):
     #     average = []
@@ -45,9 +44,9 @@ def plot(it=200,V=0.03, R=1):
     v_avg = []
     v_uncertainty = []
 
-    for n in tqdm(N):
+    for n, l in tqdm(zip(N,L)):
         velocities = []
-        for n, l in zip(N,L):
+        for i in range(avg):
             velocities.append(retrieve_param_eta(eta, it, n, V, l, R))
 
         average, uncertainty = calculate_avg_and_uncertainty(velocities)
