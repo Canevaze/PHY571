@@ -55,8 +55,8 @@ def plot(it=200,V=0.03, R=1):
         v_uncertainty.append(uncertainty)
 
     #save the values
-    #np.save(f'N_it_{it}_V_{V}_eta_{eta}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_STD_Class1.npy', N)
-    #np.save(f'v_uncertainty_it_{it}_V_{V}_eta_{eta}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_STD_Class1.npy', v_uncertainty)
+    np.save(f'N_it_{it}_V_{V}_eta_{eta}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_STD_Class1.npy', N)
+    np.save(f'v_uncertainty_it_{it}_V_{V}_eta_{eta}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_STD_Class1.npy', v_uncertainty)
 
 
     #plot it all
