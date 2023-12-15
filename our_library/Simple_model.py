@@ -10,6 +10,24 @@ class Bird:
     """
 
     def __init__(self, X, Y, theta, V):
+        """
+        explain the attributes of the class :
+        :param X: The x coordinate of the bird.
+        :type X: float
+
+        :param Y: The y coordinate of the bird.
+        :type Y: float
+
+        :param theta: The angle of the velocity of the bird.
+        :type theta: float
+
+        :param V: The norm of the velocity of the bird.
+        :type V: float
+
+        :param all_thetas: The list of all the historical angles of the velocity of the bird over time.
+        :type all_thetas: list
+        """
+
         self.X = X
         self.Y = Y
         self.theta = theta
