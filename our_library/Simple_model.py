@@ -11,7 +11,7 @@ class Bird:
 
     def __init__(self, X, Y, theta, V):
         """
-        explain the attributes of the class :
+
         :param X: The x coordinate of the bird.
         :type X: float
 
@@ -26,6 +26,7 @@ class Bird:
 
         :param all_thetas: The list of all the historical angles of the velocity of the bird over time.
         :type all_thetas: list
+
         """
 
         self.X = X
@@ -117,6 +118,35 @@ class Swarm :
     """
 
     def __init__(self, L, N, V, eta, radius):
+        """
+        
+        :param L: The size of the box, with periodic conditions.
+        :type L: int
+
+        :param N: The number of birds in the swarm.
+        :type N: int
+
+        :param V: The norm of the velocity of the birds.
+        :type V: float
+
+        :param eta: The noise parameter.
+        :type eta: float
+
+        :param radius: The radius of interaction, i.e. the distance in which birds are considered as neighbors.
+        :type radius: int
+
+        :param dt: The time step.
+        :type dt: float
+
+        :param rho: The density of the swarm.
+        :type rho: float
+
+        :param birds: The list of all the birds in the swarm.
+        :type birds: list
+
+
+        """
+
         self.length = L
         self.number = N
         self.velocity_norm = V
