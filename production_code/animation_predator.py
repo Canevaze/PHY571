@@ -1,13 +1,9 @@
-import numpy as np
-import numpy.random as rnd
-import itertools
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from matplotlib.animation import FuncAnimation
-
+import sys
+sys.path.append('.')
 from our_library import Predator_model as pm
-        
-            
+           
 #create swarm of birds and do an animation of the evolution
 L = 15
 N = 50
@@ -27,18 +23,12 @@ swarm.add_predator(predator)
 #swarm = Swarm(L, N, V, eta, interaction_radius_1)
 swarm.initialize()
 
-
 # Create the figure and axis for the plot
 fig, ax = plt.subplots()
-
-
-
 
 # Set the axis limits
 ax.set_xlim(0, L)
 ax.set_ylim(0, L)
-
-
 
 # Initialize the plot objects
 points, = ax.plot([bird.X for bird in swarm.birds], [bird.Y for bird in swarm.birds], 'bo')
@@ -51,7 +41,6 @@ def update(q):
     predator_point.set_data(swarm.predator.X, swarm.predator.Y)
 
     return points, predator_point
-
 
 # Create the animation
 animation = FuncAnimation(fig, update, frames=range(100), interval=1)

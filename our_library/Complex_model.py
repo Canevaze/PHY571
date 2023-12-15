@@ -1,9 +1,5 @@
 import numpy as np
 import numpy.random as rnd
-import itertools
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-from matplotlib.animation import FuncAnimation
 import scipy.stats as sc
 class Bird:
     """
