@@ -13,8 +13,8 @@ from our_library import Simple_model as sm
         
             
 #create swarm of birds and do an animation of the evolution
-avg = 50
-nb_pts = 50
+avg = 10
+nb_pts = 40
 
 def retrieve_param_eta(eta,it,N,V, L, R):
     swarm = sm.Swarm(L, N, V, eta, R)
@@ -32,7 +32,7 @@ def calculate_avg_and_uncertainty(data):
 
 def plot(it=200,V=0.03, R=1):
     eta = 0.75
-    N = np.linspace(100,500,nb_pts).astype(int)
+    N = np.linspace(100,400,nb_pts).astype(int)
     L = np.sqrt(N/40)*6.2
     # v = []
     # for e in tqdm(eta):
@@ -53,6 +53,10 @@ def plot(it=200,V=0.03, R=1):
         v_avg.append(average)
         v_uncertainty.append(uncertainty)
 
+    # Linear regression
+    coeffs = np.polyfit(N, v_uncertainty, 1)
+    linear_fit = np.polyval(coeffs, N)
+
     #save the values
     np.save(f'N_it_{it}_V_{V}_eta_{eta}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_STD_Class1.npy', N)
     np.save(f'v_uncertainty_it_{it}_V_{V}_eta_{eta}_R_{R}_avg_{avg}_nb_pts_{nb_pts}_STD_Class1.npy', v_uncertainty)
@@ -61,10 +65,18 @@ def plot(it=200,V=0.03, R=1):
     #plot it all
     
     plt.scatter(N,v_uncertainty)
+    plt.plot(N, linear_fit, color='red', label="Linear Fit")
     plt.xlabel("N")
     plt.ylabel("v_uncertainty")
+
+    # Annotate linear regression parameters next to the red line
+    slope, intercept = coeffs
+    annotation_text = f'Slope: {slope:.4f}\nIntercept: {intercept:.4f}'
+    plt.annotate(annotation_text, xy=(N[-1], linear_fit[-1]), color='red', fontsize=8)
+
+    plt.legend()
     #display the parameter values
-    plt.title("V = " + str(V) + ", eta = " + str(eta) + ", R = " + str(R))
+    plt.title("V = " + str(V) + ", eta = " + str(eta) + ", R = " + str(R) + ", avg = " + str(avg))
     plt.show()
 
 
