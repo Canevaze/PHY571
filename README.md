@@ -1,8 +1,3 @@
-# PHY571
+Go to Branche_lks
 
-All of the code we want you to read is on Branche_lks
-
-## Group 8:
-### Cazenave Nicolas, Lam Kon Seng Léo, Brunel Clément
-
-Numerical physics project on Bird flocking and Swarm intelligence modelisation
+The actual code we wrote and want to give you is on Branche_lks
